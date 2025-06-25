@@ -10,8 +10,8 @@ unsigned short convertShortEndian(unsigned short s) {
 
 // long long convert
 unsigned long long convertLongLongEndian(unsigned long long ull) {
-    // byte1 to byte4 | byte4 to byte1 | byte2 to byte3 | byte3 to byte2
-    return (ull >> 24) | (ull << 24) | ((ull >> 8)|(0x0000FF00)) | ((ull<<8)|(0x00));
+    // byte1 to byte8 | byte8 to byte1 | byte2 to byte7 | byte3 to byte6 | byte4 to byte5 | byte5 to byte4 | byte6 to byte3 | byte7 to byte2
+    return (ull >> 8*7) | (ull << 8*7) | ((ull >> 8*5)&(0xFF00)) | ((ull >> 8*3)&(0xFF0000)) | ((ull >> 8)&(0xFF000000)) | ((ull<<8)&(0xFF00000000)) | ((ull<<8*3)&(0xFF0000000000)) | ((ull<<8*5)&(0xFF000000000000));
 }
 
 // check LittleEndian(HostByteOrder) and BigEndian(NetworkByteOrder)
@@ -34,10 +34,14 @@ endianMode getEndianMode() {
 int main() {
     unsigned short original = 0x1234;
     unsigned short bigEndianShort = 0;
+    unsigned long long ull = 0x1122334455667788;
+    unsigned long long bigEndianUll = 0;
     if (getEndianMode() == endianMode::LittleEndian) {
         bigEndianShort = convertShortEndian(original);
+        bigEndianUll = convertLongLongEndian(ull);
     }
 
-    cout << hex << bigEndianShort << endl;
+    cout << "0x" << hex << bigEndianShort << endl;
+    cout << "0x" << hex << bigEndianUll << endl;
     return 0;
 }
